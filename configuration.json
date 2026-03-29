@@ -1,0 +1,20 @@
+{
+    "blocking_enabled": true,
+    "eventlog_monitor": "Cisco Secure Client - Umbrella",
+    "block_string": "IPv4 DNS redirection: DEACTIVATED",
+    "allow_string": "IPv4 DNS redirection: ACTIVATED",
+    "rule_configuration": [
+        {
+            "rule_name": "Block_Google_Chrome",
+            "program_path": "$PROGRAMFILES\\Google\\Chrome\\Application\\chrome.exe"
+        },
+        {
+            "rule_name": "Block_MS_Edge",
+            "program_path": "$PROGRAMFILES86\\Microsoft\\Edge\\Application\\msedge.exe"
+        },
+        {
+            "rule_name": "Block_Firefox",
+            "program_path": "$PROGRAMFILES\\Mozilla Firefox\\firefox.exe"
+        }
+    ]
+}
