@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -54,7 +53,7 @@ func ReadConfiguration() (Configuration, error) {
 	}
 
 	prettyConfig, err := json.MarshalIndent(configuration, "", " ")
-	log.Println("Running configuration: \n" + string(prettyConfig[:]))
+	eventlogger.Info(200, "Running configuration: \n"+string(prettyConfig[:]))
 
 	return configuration, nil
 }

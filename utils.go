@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 	"path/filepath"
 	"syscall"
@@ -28,14 +28,14 @@ func CreateEventlogQuery(querystring map[string]string) (*uint16, error) {
 func GetRunningDirectory() (string, error) {
 	executablePath, err := os.Executable()
 	if err != nil {
-		log.Println("os.Executable(): \n", err)
+		eventlogger.Error(200, fmt.Sprintf("os.Executable(): %v", err))
 		return "", err
 	}
 
 	// Should never happen but let's be safe :)
 	executablePath, err = filepath.EvalSymlinks(executablePath)
 	if err != nil {
-		log.Println("filepath.EvalSymlinks(): \n", err)
+		eventlogger.Error(200, fmt.Sprintf("filepath.EvalSymlinks(): %v", err))
 		return "", err
 	}
 	return filepath.Dir(executablePath), nil
