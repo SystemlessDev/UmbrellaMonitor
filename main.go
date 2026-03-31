@@ -10,14 +10,6 @@ import (
 const WINDOWS_ENGLISH_LANGUAGE = 1033
 
 func main() {
-	// TODO: log to event log
-	/*
-		logOutput, err := CreateLogFile()
-		if err != nil {
-			os.Exit(1)
-		}
-		log.SetOutput(logOutput)
-	*/
 	init_eventlog()
 	inService, err := svc.IsWindowsService()
 	if err != nil {
