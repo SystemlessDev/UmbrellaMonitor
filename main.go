@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 
 	"golang.org/x/sys/windows/svc"
 )
@@ -21,9 +20,6 @@ func main() {
 			log.Fatalf("service failed: %v", err)
 		}
 	} else {
-		go eventlog_read_loop()
-		for {
-			time.Sleep(10 * time.Second)
-		}
+		eventlog_read_loop()
 	}
 }
