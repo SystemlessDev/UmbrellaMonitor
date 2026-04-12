@@ -9,13 +9,13 @@ func SetFirewallRules(firewallSession *wf.Session, firewallAction wf.Action, fir
 	var errorarray []error
 
 	for _, program := range firewallConfiguration {
+		appID, err := wf.AppID(program.ProgramPath)
+		if err != nil {
+			// Program not found. Ignoring it.
+			continue
+		}
 		switch firewallAction {
 		case wf.ActionBlock:
-			appID, err := wf.AppID(program.ProgramPath)
-			if err != nil {
-				// Program not found. Ignoring it.
-				continue
-			}
 			err = firewallSession.AddRule(&wf.Rule{
 				Name:   program.RuleName,
 				Layer:  wf.LayerALEAuthConnectV4,
