@@ -21,6 +21,7 @@ func eventlog_read_loop() {
 	ParsedConfig, err = ReadConfiguration()
 	if err != nil {
 		eventlogger.Error(200, fmt.Sprintf("ReadConfiguration(): %v", err))
+		syscall.Exit(1)
 	}
 
 	// Killswitch
