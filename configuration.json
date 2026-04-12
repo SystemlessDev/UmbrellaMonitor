@@ -1,8 +1,14 @@
 {
     "blocking_enabled": true,
     "eventlog_monitor": "Cisco Secure Client - Umbrella",
-    "block_string": "IPv4 DNS redirection: DEACTIVATED",
-    "allow_string": "IPv4 DNS redirection: ACTIVATED",
+    "block_strings": [
+        "IPv4 DNS redirection: DEACTIVATED",
+        "IPv6 DNS redirection: DEACTIVATED"
+    ],
+    "allow_strings": [
+        "IPv4 DNS redirection: ACTIVATED",
+        "IPv6 DNS redirection: ACTIVATED"
+    ],
     "rule_configuration": [
         {
             "rule_name": "Block_Google_Chrome",
