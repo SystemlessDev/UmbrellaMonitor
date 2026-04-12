@@ -12,8 +12,8 @@ import (
 type Configuration struct {
 	BlockingEnabled    bool                `json:"blocking_enabled"`
 	EventlogMonitor    string              `json:"eventlog_monitor"`
-	BlockStrings       []string            `json:"block_strings"`
-	AllowStrings       []string            `json:"allow_strings"`
+	BlockString        string              `json:"block_string"`
+	AllowString        string              `json:"allow_string"`
 	RuleConfigurations []ConfigurationRule `json:"rule_configuration"`
 }
 

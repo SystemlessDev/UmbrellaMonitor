@@ -88,19 +88,15 @@ func eventlog_read_loop() {
 			}
 			var firewallAction wf.Action
 			for _, event := range renderedEvents {
-				for _, allowstring := range ParsedConfig.AllowStrings {
-					if strings.Contains(event, allowstring) {
-						eventlogger.Info(100, fmt.Sprintf("Event unblocking firewall: %v", event))
-						firewallAction = wf.ActionPermit
-					}
-				}
-				for _, blockstring := range ParsedConfig.BlockStrings {
-					if strings.Contains(event, blockstring) {
-						eventlogger.Info(100, fmt.Sprintf("Event blocking firewall: %v", event))
-						firewallAction = wf.ActionBlock
-					}
+				if strings.Contains(event, ParsedConfig.AllowString) {
+					eventlogger.Info(100, fmt.Sprintf("Event unblocking firewall: %v", event))
+					firewallAction = wf.ActionPermit
+				} else if strings.Contains(event, ParsedConfig.BlockString) {
+					eventlogger.Info(100, fmt.Sprintf("Event blocking firewall: %v", event))
+					firewallAction = wf.ActionBlock
 				}
 			}
+
 			if (firewallAction == wf.ActionPermit) || (firewallAction == wf.ActionBlock) {
 				errorarray := SetFirewallRules(firewallSession, firewallAction, ParsedConfig.RuleConfigurations)
 				if len(errorarray) > 0 {
