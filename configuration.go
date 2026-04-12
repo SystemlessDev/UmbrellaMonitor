@@ -36,6 +36,9 @@ func ReadConfiguration() (Configuration, error) {
 
 	configurationPath := filepath.Join(running_directory, "configuration.json")
 	filebuffer, err = os.ReadFile(configurationPath)
+	if err != nil {
+		return Configuration{}, err
+	}
 
 	err = json.Unmarshal(filebuffer, &configuration)
 	if err != nil {
