@@ -30,13 +30,15 @@ func SetFirewallRules(firewallSession *wf.Session, firewallAction wf.Action, fir
 				},
 				Action: wf.ActionBlock,
 			})
-
-			errorarray = append(errorarray, err)
+			if err != nil {
+				errorarray = append(errorarray, err)
+			}
 
 		case wf.ActionPermit:
 			err := firewallSession.DeleteRule(wf.RuleID(program.RuleGUID))
-			errorarray = append(errorarray, err)
-
+			if err != nil {
+				errorarray = append(errorarray, err)
+			}
 		}
 	}
 	return errorarray
