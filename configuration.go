@@ -10,11 +10,11 @@ import (
 )
 
 type Configuration struct {
-	BlockingEnabled   bool                `json:"blocking_enabled"`
-	EventlogMonitor   string              `json:"eventlog_monitor"`
-	BlockStrings      []string            `json:"block_strings"`
-	AllowStrings      []string            `json:"allow_strings"`
-	RuleConfiguration []ConfigurationRule `json:"rule_configuration"`
+	BlockingEnabled    bool                `json:"blocking_enabled"`
+	EventlogMonitor    string              `json:"eventlog_monitor"`
+	BlockStrings       []string            `json:"block_strings"`
+	AllowStrings       []string            `json:"allow_strings"`
+	RuleConfigurations []ConfigurationRule `json:"rule_configuration"`
 }
 
 type ConfigurationRule struct {
@@ -46,12 +46,12 @@ func ReadConfiguration() (Configuration, error) {
 	}
 
 	// Replace template strings
-	for index, item := range configuration.RuleConfiguration {
-		configuration.RuleConfiguration[index].RuleGUID, _ = windows.GenerateGUID()
+	for index, item := range configuration.RuleConfigurations {
+		configuration.RuleConfigurations[index].RuleGUID, _ = windows.GenerateGUID()
 		if strings.Contains(item.ProgramPath, "$PROGRAMFILES86") {
-			configuration.RuleConfiguration[index].ProgramPath = strings.Replace(item.ProgramPath, "$PROGRAMFILES86", PROGRAM_FILES_86, 1)
+			configuration.RuleConfigurations[index].ProgramPath = strings.Replace(item.ProgramPath, "$PROGRAMFILES86", PROGRAM_FILES_86, 1)
 		} else if strings.Contains(item.ProgramPath, "$PROGRAMFILES") {
-			configuration.RuleConfiguration[index].ProgramPath = strings.Replace(item.ProgramPath, "$PROGRAMFILES", PROGRAM_FILES, 1)
+			configuration.RuleConfigurations[index].ProgramPath = strings.Replace(item.ProgramPath, "$PROGRAMFILES", PROGRAM_FILES, 1)
 		}
 	}
 

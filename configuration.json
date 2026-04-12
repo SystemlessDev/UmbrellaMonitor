@@ -9,7 +9,7 @@
         "IPv4 DNS redirection: ACTIVATED",
         "IPv6 DNS redirection: ACTIVATED"
     ],
-    "rule_configuration": [
+    "rule_configurations": [
         {
             "rule_name": "Block_Google_Chrome",
             "program_path": "$PROGRAMFILES\\Google\\Chrome\\Application\\chrome.exe"

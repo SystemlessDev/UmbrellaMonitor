@@ -102,7 +102,7 @@ func eventlog_read_loop() {
 				}
 			}
 			if (firewallAction == wf.ActionPermit) || (firewallAction == wf.ActionBlock) {
-				errorarray := SetFirewallRules(firewallSession, firewallAction, ParsedConfig.RuleConfiguration)
+				errorarray := SetFirewallRules(firewallSession, firewallAction, ParsedConfig.RuleConfigurations)
 				if len(errorarray) > 0 {
 					eventlogger.Warning(100, fmt.Sprintf("Got error while setting firewall rules: %v", errorarray))
 				}
