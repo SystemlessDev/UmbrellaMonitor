@@ -20,8 +20,10 @@ sc.exe create umbrellamonitor binPath=C:\IT_DEPARTMENT\umbrellamonitor.exe start
 ```json
 {
     "eventlog_monitor": "Cisco Secure Client - Umbrella",
-    "block_string": "IPv4 DNS redirection: DEACTIVATED",
-    "allow_string": "IPv4 DNS redirection: ACTIVATED",
+    "block_string_v4": "IPv4 DNS redirection: DEACTIVATED",
+    "allow_string_v4": "IPv4 DNS redirection: ACTIVATED",
+    "block_string_v6": "IPv6 DNS redirection: DEACTIVATED",
+    "allow_string_v6": "IPv6 DNS redirection: ACTIVATED",
     "rule_configuration": [
         {
             "rule_name": "Block_Google_Chrome",
