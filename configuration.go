@@ -10,7 +10,6 @@ import (
 )
 
 type Configuration struct {
-	BlockingEnabled    bool                `json:"blocking_enabled"`
 	EventlogMonitor    string              `json:"eventlog_monitor"`
 	BlockString        string              `json:"block_string"`
 	AllowString        string              `json:"allow_string"`

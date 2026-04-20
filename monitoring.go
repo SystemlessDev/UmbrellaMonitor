@@ -5,7 +5,6 @@ import (
 	"log"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/google/winops/winlog"
 	"github.com/google/winops/winlog/wevtapi"
@@ -24,13 +23,6 @@ func eventlog_read_loop() {
 		syscall.Exit(1)
 	}
 
-	// Killswitch
-	if ParsedConfig.BlockingEnabled == false {
-		eventlogger.Info(300, "Killswitch active")
-		for {
-			time.Sleep(120 * time.Second)
-		}
-	}
 	// Dynamic makes the firewall rules die together with the program
 	firewallSession, err := wf.New(&wf.Options{
 		Name:    "UmbrellaMonitor",

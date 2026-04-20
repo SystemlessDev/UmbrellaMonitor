@@ -1,5 +1,4 @@
 {
-    "blocking_enabled": true,
     "eventlog_monitor": "Cisco Secure Client - Umbrella",
     "block_string": "IPv4 DNS redirection: DEACTIVATED",
     "allow_string": "IPv4 DNS redirection: ACTIVATED",

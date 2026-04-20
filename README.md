@@ -19,7 +19,6 @@ sc.exe create umbrellamonitor binPath=C:\IT_DEPARTMENT\umbrellamonitor.exe start
 ### Example configuration.json
 ```json
 {
-    "blocking_enabled": true,
     "eventlog_monitor": "Cisco Secure Client - Umbrella",
     "block_string": "IPv4 DNS redirection: DEACTIVATED",
     "allow_string": "IPv4 DNS redirection: ACTIVATED",
