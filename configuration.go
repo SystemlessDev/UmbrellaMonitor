@@ -5,21 +5,20 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"golang.org/x/sys/windows"
 )
 
 type Configuration struct {
 	EventlogMonitor    string              `json:"eventlog_monitor"`
-	BlockString        string              `json:"block_string"`
-	AllowString        string              `json:"allow_string"`
+	BlockStringV4      string              `json:"block_string_v4"`
+	AllowStringV4      string              `json:"allow_string_v4"`
+	BlockStringV6      string              `json:"block_string_v6"`
+	AllowStringV6      string              `json:"allow_string_v6"`
 	RuleConfigurations []ConfigurationRule `json:"rule_configuration"`
 }
 
 type ConfigurationRule struct {
 	RuleName    string `json:"rule_name"`
 	ProgramPath string `json:"program_path"`
-	RuleGUID    windows.GUID
 }
 
 // Reads configuration in its running directory
@@ -46,7 +45,6 @@ func ReadConfiguration() (Configuration, error) {
 
 	// Replace template strings
 	for index, item := range configuration.RuleConfigurations {
-		configuration.RuleConfigurations[index].RuleGUID, _ = windows.GenerateGUID()
 		if strings.Contains(item.ProgramPath, "$PROGRAMFILES86") {
 			configuration.RuleConfigurations[index].ProgramPath = strings.Replace(item.ProgramPath, "$PROGRAMFILES86", PROGRAM_FILES_86, 1)
 		} else if strings.Contains(item.ProgramPath, "$PROGRAMFILES") {
