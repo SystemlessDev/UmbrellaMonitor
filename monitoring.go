@@ -78,22 +78,36 @@ func eventlog_read_loop() {
 				eventlogger.Warning(200, fmt.Sprintf("winlog.GetRenderedEvents returned error: %v", err))
 				break
 			}
-			var firewallAction wf.Action
+			var firewallActionv4 wf.Action
+			var firewallActionv6 wf.Action
 			for _, event := range renderedEvents {
-				if strings.Contains(event, ParsedConfig.AllowString) {
-					eventlogger.Info(100, fmt.Sprintf("Event unblocking firewall: %v", event))
-					firewallAction = wf.ActionPermit
-				} else if strings.Contains(event, ParsedConfig.BlockString) {
-					eventlogger.Info(100, fmt.Sprintf("Event blocking firewall: %v", event))
-					firewallAction = wf.ActionBlock
+				switch {
+				case strings.Contains(event, ParsedConfig.AllowStringV4):
+					firewallActionv4 = wf.ActionPermit
+				case strings.Contains(event, ParsedConfig.BlockStringV4):
+					firewallActionv4 = wf.ActionBlock
+				case strings.Contains(event, ParsedConfig.AllowStringV6):
+					firewallActionv6 = wf.ActionPermit
+				case strings.Contains(event, ParsedConfig.BlockStringV6):
+					firewallActionv6 = wf.ActionBlock
 				}
 			}
 
-			if (firewallAction == wf.ActionPermit) || (firewallAction == wf.ActionBlock) {
-				errorarray := SetFirewallRules(firewallSession, firewallAction, ParsedConfig.RuleConfigurations)
-				if len(errorarray) > 0 {
-					eventlogger.Warning(100, fmt.Sprintf("Got error while setting firewall rules: %v", errorarray))
-				}
+			if firewallActionv4 == wf.ActionPermit {
+				DeleteFirewallRules(firewallSession, "UM_IPV4")
+			} else if firewallActionv6 == wf.ActionPermit {
+				DeleteFirewallRules(firewallSession, "UM_IPV6")
+			}
+
+			var errorarray []error
+			if firewallActionv4 == wf.ActionBlock {
+				errorarray = SetFirewallRules(firewallSession, ParsedConfig.RuleConfigurations, wf.LayerALEAuthConnectV4)
+			} else if firewallActionv6 == wf.ActionBlock {
+				errorarray = SetFirewallRules(firewallSession, ParsedConfig.RuleConfigurations, wf.LayerALEAuthConnectV6)
+			}
+
+			if len(errorarray) > 0 {
+				eventlogger.Warning(100, fmt.Sprintf("Got error while setting firewall rules: %v", errorarray))
 			}
 		}
 	}

@@ -11,9 +11,11 @@ import (
 
 type Configuration struct {
 	EventlogMonitor    string              `json:"eventlog_monitor"`
-	BlockString        string              `json:"block_string"`
-	AllowString        string              `json:"allow_string"`
-	RuleConfigurations []ConfigurationRule `json:"rule_configuration"`
+	BlockStringV4      string              `json:"block_string_v4"`
+	AllowStringV4      string              `json:"allow_string_v4"`
+	BlockStringV6      string              `json:"block_string_v6"`
+	AllowStringV6      string              `json:"allow_string_v6"`
+	RuleConfigurations []ConfigurationRule `json:"rule_configurations"`
 }
 
 type ConfigurationRule struct {
