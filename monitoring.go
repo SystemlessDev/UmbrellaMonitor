@@ -12,22 +12,16 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-type RuleState struct {
-	IPv4 wf.Action
-	IPv6 wf.Action
-}
-
-type ActiveFirewallRules struct {
-	IPv4Rules []wf.RuleID
-	IPv6Rules []wf.RuleID
-}
-
-var ActiveRules ActiveFirewallRules
-
 // Source:
 // https://github.com/google/winops/blob/master/winlog/examples/pullsub/pullsub.go
 func eventlog_read_loop() {
 	var err error
+	var ParsedConfig Configuration
+	ParsedConfig, err = ReadConfiguration()
+	if err != nil {
+		eventlogger.Error(200, fmt.Sprintf("ReadConfiguration(): %v", err))
+		syscall.Exit(1)
+	}
 
 	// Dynamic makes the firewall rules die together with the program
 	firewallSession, err := wf.New(&wf.Options{
@@ -46,7 +40,7 @@ func eventlog_read_loop() {
 	// Possible race condition:
 	// In theory, someone could crash this process and do the Umbrella trick. That would, in theory, revert to the old behavior.
 	winlogConfig.Flags = wevtapi.EvtSubscribeToFutureEvents
-	query, err := CreateEventlogQuery(map[string]string{PARSED_CONFIGURATION.EventlogMonitor: "*"})
+	query, err := CreateEventlogQuery(map[string]string{ParsedConfig.EventlogMonitor: "*"})
 	if err != nil {
 		eventlogger.Error(200, fmt.Sprintf("CreateEventlogQuery(): %v", err))
 	}
@@ -84,74 +78,22 @@ func eventlog_read_loop() {
 				eventlogger.Warning(200, fmt.Sprintf("winlog.GetRenderedEvents returned error: %v", err))
 				break
 			}
-			var firewallAction RuleState
+			var firewallAction wf.Action
 			for _, event := range renderedEvents {
-				if strings.Contains(event, PARSED_CONFIGURATION.AllowStringV4) {
+				if strings.Contains(event, ParsedConfig.AllowString) {
 					eventlogger.Info(100, fmt.Sprintf("Event unblocking firewall: %v", event))
-					firewallAction.IPv4 = wf.ActionPermit
-				} else if strings.Contains(event, PARSED_CONFIGURATION.BlockStringV4) {
+					firewallAction = wf.ActionPermit
+				} else if strings.Contains(event, ParsedConfig.BlockString) {
 					eventlogger.Info(100, fmt.Sprintf("Event blocking firewall: %v", event))
-					firewallAction.IPv4 = wf.ActionBlock
-				}
-				if strings.Contains(event, PARSED_CONFIGURATION.AllowStringV6) {
-					eventlogger.Info(100, fmt.Sprintf("Event unblocking firewall: %v", event))
-					firewallAction.IPv6 = wf.ActionPermit
-				} else if strings.Contains(event, PARSED_CONFIGURATION.BlockStringV6) {
-					eventlogger.Info(100, fmt.Sprintf("Event blocking firewall: %v", event))
-					firewallAction.IPv6 = wf.ActionBlock
+					firewallAction = wf.ActionBlock
 				}
 			}
 
-			switch firewallAction.IPv4 {
-			case wf.ActionPermit:
-				currentRules := []wf.RuleID{}
-				for _, ruleID := range ActiveRules.IPv4Rules {
-					err = DeleteFirewallRule(firewallSession, ruleID)
-					if err != nil {
-						eventlogger.Warning(100, fmt.Sprintf("Got error while deleting firewall rule: %v", err))
-						currentRules = append(currentRules, ruleID)
-					}
+			if (firewallAction == wf.ActionPermit) || (firewallAction == wf.ActionBlock) {
+				errorarray := SetFirewallRules(firewallSession, firewallAction, ParsedConfig.RuleConfigurations)
+				if len(errorarray) > 0 {
+					eventlogger.Warning(100, fmt.Sprintf("Got error while setting firewall rules: %v", errorarray))
 				}
-				ActiveRules.IPv4Rules = currentRules
-
-			case wf.ActionBlock:
-				for _, rule := range PARSED_CONFIGURATION.RuleConfigurations {
-					ruleId, err := SetFirewallRule(firewallSession, rule, wf.LayerALEAuthConnectV4)
-					if err != nil {
-						eventlogger.Warning(100, fmt.Sprintf("Got error while setting firewall rule: %v", err))
-						continue
-					}
-					ActiveRules.IPv4Rules = append(ActiveRules.IPv4Rules, ruleId)
-				}
-
-			default:
-				// ignore
-			}
-
-			switch firewallAction.IPv6 {
-			case wf.ActionPermit:
-				currentRules := []wf.RuleID{}
-				for _, ruleID := range ActiveRules.IPv6Rules {
-					err = DeleteFirewallRule(firewallSession, ruleID)
-					// If we experience an error we don't remove the rule from the array.
-					if err != nil {
-						eventlogger.Warning(100, fmt.Sprintf("Got error while deleting firewall rule: %v", err))
-						currentRules = append(currentRules, ruleID)
-					}
-				}
-				ActiveRules.IPv6Rules = currentRules
-			case wf.ActionBlock:
-				for _, rule := range PARSED_CONFIGURATION.RuleConfigurations {
-					ruleId, err := SetFirewallRule(firewallSession, rule, wf.LayerALEAuthConnectV6)
-					if err != nil {
-						eventlogger.Warning(100, fmt.Sprintf("Got error while setting firewall rule: %v", err))
-						continue
-					}
-					ActiveRules.IPv6Rules = append(ActiveRules.IPv6Rules, ruleId)
-				}
-
-			default:
-				// ignore
 			}
 		}
 	}
