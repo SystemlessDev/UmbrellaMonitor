@@ -83,12 +83,16 @@ func eventlog_read_loop() {
 			for _, event := range renderedEvents {
 				switch {
 				case strings.Contains(event, ParsedConfig.AllowStringV4):
+					eventlogger.Info(200, fmt.Sprintf("Event opening IPv4 firewall: %v", event))
 					firewallActionv4 = wf.ActionPermit
 				case strings.Contains(event, ParsedConfig.BlockStringV4):
+					eventlogger.Info(200, fmt.Sprintf("Event blocking IPv4 firewall: %v", event))
 					firewallActionv4 = wf.ActionBlock
 				case strings.Contains(event, ParsedConfig.AllowStringV6):
+					eventlogger.Info(200, fmt.Sprintf("Event opening IPv6 firewall: %v", event))
 					firewallActionv6 = wf.ActionPermit
 				case strings.Contains(event, ParsedConfig.BlockStringV6):
+					eventlogger.Info(200, fmt.Sprintf("Event blocking IPv6 firewall: %v", event))
 					firewallActionv6 = wf.ActionBlock
 				}
 			}
