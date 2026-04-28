@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/tailscale/wf"
+	"golang.org/x/sys/windows"
 )
 
 // https://tailscale.com/blog/windows-firewall
@@ -18,6 +19,7 @@ func SetFirewallRules(firewallSession *wf.Session, firewallConfiguration []Confi
 	}
 
 	for _, program := range firewallConfiguration {
+		ruleGUID, _ := windows.GenerateGUID()
 		appID, err := wf.AppID(program.ProgramPath)
 		if err != nil {
 			// Program not found. Ignoring it.
@@ -26,7 +28,7 @@ func SetFirewallRules(firewallSession *wf.Session, firewallConfiguration []Confi
 		err = firewallSession.AddRule(&wf.Rule{
 			Name:   prefix + program.RuleName,
 			Layer:  firewallLayer,
-			ID:     wf.RuleID(program.RuleGUID),
+			ID:     wf.RuleID(ruleGUID),
 			Weight: 100,
 			Conditions: []*wf.Match{
 				{
